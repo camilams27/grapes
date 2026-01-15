@@ -42,7 +42,7 @@ A execução é feita via classes `App` para simulação dos fluxos.
 ---
 
 ## 📄 Convenções e Documentação
-- Padrão de commits semânticos: ver [COMMITS.md](./COMMITS.md)
+- Padrão de commits semânticos: [COMMITS.md](./COMMITS.md)
 - Visão geral do projeto: [ABOUT_PROJECT.md](./ABOUT_PROJECT.md)
 
 
