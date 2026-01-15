@@ -1,36 +1,53 @@
-# grapes
+# Grapes 🍇
 
-`grapes` é um aplicativo pensado para organização financeira que visa trazer mais conforto e medição com seus gastos, fazendo você visualizar e monitorar informações financeiras de forma simples e segura.
+Grapes é um projeto de estudo em Engenharia de Software focado em
+modelagem de domínio, boas práticas e desenvolvimento backend com Java.
 
-## Sobre
+O objetivo é construir, de forma incremental, uma aplicação de finanças
+pessoais com metas financeiras e registro de transações.
 
-O objetivo do projeto é oferecer uma solução modular para controle financeiro: gestão de contas, categorias, lançamentos, relatórios e integrações com serviços bancários (futuramente).
+---
 
-## Objetivos principais
+## 🎯 Objetivo do Projeto
+- Praticar Java moderno e POO
+- Aplicar separação de responsabilidades (model / service)
+- Utilizar Git com fluxo profissional
+- Evoluir o projeto gradualmente até Spring Boot
 
-- Centralizar transações e saldos por conta e entidade.
-- Fornecer relatórios e dashboards para análises financeiras.
+---
 
-## Público-alvo
+## 🧱 Estrutura do Projeto
 
-1. Jovens adultos (18–35 anos) que desejam organizar a vida financeira
+```br.com.grapes
+├── model
+│ ├── Goal
+│ ├── TransactionGoal
+│ ├── TransactionLedger
+│ └── User
+│
+├── service
+│ ├── GoalService
+│ └── LedgerService
+│
+└── app
+├── GoalApp
+└── LedgerApp```
+```
+---
 
-Pessoas que estão começando a lidar com finanças próprias, geralmente com dívidas pequenas ou médias (cartão, boleto, empréstimo) e que precisam de clareza, controle e metas simple
+## 🚀 Como executar
+O projeto ainda não possui interface gráfica ou API.
+A execução é feita via classes `App` para simulação dos fluxos.
 
-2. Trabalhadores com rotina corrida que precisam de praticidade
+---
 
-Usuários que não têm tempo para planilhas ou apps financeiros complexos. Buscam uma ferramenta rápida, com visual limpo, lembretes, e acompanhamento básico — sem burocracia.
+## 📄 Convenções e Documentação
+- Padrão de commits semânticos: ver [COMMITS.md](./COMMITS.md)
+- Visão geral do projeto: [ABOUT_PROJECT.md](./ABOUT_PROJECT.md)
 
-3. Pessoas com dificuldades de controle financeiro e tendência a atrasos
 
-Quem costuma perder datas de pagamento, se enrolar com boletos, ou não tem noção clara do quanto deve. Valorizam funcionalidades como: alertas, linha do tempo das dívidas, análises simples e planejamento automático.
+---
 
-## Estado atual
+## 📌 Status
+Projeto em desenvolvimento — **Semestre 1, Semana 2 concluída**.
 
-Projeto inicial — somente este `README.md` está presente.
-
-## Como contribuir
-
-Abra uma issue descrevendo sua sugestão ou correção. Para mudanças maiores, abra um pull request com uma descrição clara das alterações.
-
-Projeto: grapes — aplicativo para organizações financeiras.
