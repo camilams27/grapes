@@ -1,12 +1,19 @@
 package com.grapes.domain.model;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 /**
  * Representa um jogador no sistema Grapes.
@@ -22,19 +29,23 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(unique = true, nullable = false)
     private String nickname;
-    private String email;
     private long experience = 0;
     private int level = 1;
     private BigDecimal balance;
     private String activeSkin;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     // XP necessário para subir de nível
     private static final long totalXpToNextLevel = 100;
 
-    public Player(String nickname, String email, BigDecimal balance, String activeSkin) {
+    public Player(String nickname, BigDecimal balance, String activeSkin) {
         this.nickname = nickname;
-        this.email = email;
         this.balance = balance;
         this.activeSkin = activeSkin;
     }
@@ -95,6 +106,42 @@ public class Player {
 
     public long getXpToNextLevel() {
         return this.calculateNextLevelCost();
+    }
+
+    public void setExperience(long experience) {
+        this.experience = experience;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public BigDecimal getBalance() {
+        return this.balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getActiveSkin() {
+        return this.activeSkin;
+    }
+
+    public void setActiveSkin(String activeSkin) {
+        this.activeSkin = activeSkin;
     }
 
 }
