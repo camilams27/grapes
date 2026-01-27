@@ -1,19 +1,34 @@
 package com.grapes.infrastructure.api;
 
-import com.grapes.application.dto.CreatePlayerRequest;
-import com.grapes.application.dto.GainXpRequest;
-import com.grapes.application.services.PlayerService;
-import com.grapes.domain.model.Player;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import com.grapes.application.dto.GainXpRequest;
+import com.grapes.application.dto.PlayerPrivateResponse;
+import com.grapes.application.dto.PlayerPublicResponse;
+import com.grapes.application.services.PlayerService;
+import com.grapes.domain.model.Player;
+import com.grapes.domain.model.User;
+
+import jakarta.validation.Valid;
 
 /**
- * REST Controller (Adapter de entrada) para operações de Player.
- * Recebe requisições HTTP e delega para o Application Service.
+ * REST Controller para operações de Player.
+ * 
+ * TODAS as rotas aqui requerem token JWT válido!
+ * 
+ * ENDPOINTS:
+ * - GET /players/me → Dados PRIVADOS do player logado (contém email)
+ * - GET /players/{id} → Dados PÚBLICOS de qualquer player (sem email)
+ * - POST /players/{nickname}/xp → Adiciona XP ao player
  */
 @RestController
 @RequestMapping("/players")
@@ -22,51 +37,65 @@ public class PlayerController {
 
     private final PlayerService playerService;
 
-    // Injeção via Construtor
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
 
     /**
-     * Cria um novo Player.
-     * POST /players
-     *
-     * @param request DTO com nickname e email
-     * @return Player criado com status 201
+     * Retorna os dados PRIVADOS do Player logado.
+     * GET /players/me
+     * 
+     * � Retorna PlayerPrivateResponse (com email e id)
+     * Apenas o próprio usuário pode acessar seus dados completos.
      */
-    @PostMapping
-    public ResponseEntity<Player> createPlayer(@Valid @RequestBody CreatePlayerRequest request) {
-        Player player = playerService.createPlayer(request.nickname(), request.email());
-        return ResponseEntity.status(HttpStatus.CREATED).body(player);
+    @GetMapping("/me")
+    public ResponseEntity<?> getLoggedPlayer(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("User not authenticated");
+        }
+
+        try {
+            Player player = playerService.findByEmail(user.getEmail());
+            return ResponseEntity.ok(PlayerPrivateResponse.from(player));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    /**
+     * Retorna os dados PÚBLICOS de um Player pelo nickname.
+     * GET /players/{nickname}
+     * 
+     * 🔓 Retorna PlayerPublicResponse (SEM email e id)
+     * Qualquer usuário autenticado pode consultar.
+     */
+    @GetMapping("/{nickname}")
+    public ResponseEntity<?> getPlayer(@PathVariable String nickname) {
+        try {
+            Player player = playerService.findByNickname(nickname);
+            return ResponseEntity.ok(PlayerPublicResponse.from(player));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     /**
      * Adiciona XP a um Player existente.
-     * POST /players/{id}/xp
-     *
-     * @param id      UUID do player
-     * @param request DTO com amount de XP
-     * @return Player atualizado
+     * POST /players/{nickname}/xp
      */
-    @PostMapping("/{id}/xp")
-    public ResponseEntity<Player> addExperience(
-            @PathVariable UUID id,
+    @PostMapping("/{nickname}/xp")
+    public ResponseEntity<?> addExperience(
+            @PathVariable String nickname,
             @Valid @RequestBody GainXpRequest request) {
-        Player updatedPlayer = playerService.addExperience(id, request.amount());
-        return ResponseEntity.ok(updatedPlayer);
+        try {
+            Player updatedPlayer = playerService.addExperience(nickname, request.amount());
+            return ResponseEntity.ok(PlayerPublicResponse.from(updatedPlayer));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Internal Server Error: " + e.getMessage());
+        }
     }
-
-    /**
-     * Busca um Player pelo ID.
-     * GET /players/{id}
-     *
-     * @param id UUID do player
-     * @return Player encontrado
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayer(@PathVariable UUID id) {
-        Player player = playerService.findById(id);
-        return ResponseEntity.ok(player);
-    }
-
 }
