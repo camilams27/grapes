@@ -69,15 +69,15 @@ public class AuthController {
      * Endpoint de Login.
      * 
      * POST /auth/login
-     * Body: { "email": "user@email.com", "password": "123456" }
+     * Body: { "nickname": "Player1", "password": "123456" }
      * 
-     * @param request DTO com email e password
+     * @param request DTO com nickname e password
      * @return Token JWT se credenciais válidas, erro 401 se inválidas
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            LoginResponse response = authService.authenticate(request.email(), request.password());
+            LoginResponse response = authService.authenticate(request.nickname(), request.password());
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
@@ -87,4 +87,3 @@ public class AuthController {
         }
     }
 }
-

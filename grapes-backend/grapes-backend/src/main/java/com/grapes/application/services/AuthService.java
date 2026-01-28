@@ -57,29 +57,35 @@ public class AuthService {
     }
 
     /**
-     * Autentica o usuário e retorna um token JWT.
+     * Autentica o usuário pelo NICKNAME e retorna um token JWT.
      *
-     * @param email    email do usuário
+     * @param nickname nickname do jogador
      * @param password senha em texto puro
      * @return LoginResponse com o token JWT
      * @throws RuntimeException se as credenciais forem inválidas
      */
-    public LoginResponse authenticate(String email, String password) {
-        // Passo 1: Buscar usuário pelo email
-        User user = userRepository.findByEmail(email)
+    public LoginResponse authenticate(String nickname, String password) {
+        // Passo 1: Buscar PLAYER pelo nickname
+        Player player = playerRepository.findByNickname(nickname)
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-        // Passo 2: Verificar se a senha confere
+        // Passo 2: Obter o User associado ao Player
+        User user = player.getUser();
+        if (user == null) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        // Passo 3: Verificar se a senha confere
         boolean passwordMatches = passwordEncoder.matches(password, user.getPassword());
 
         if (!passwordMatches) {
             throw new RuntimeException("Invalid credentials");
         }
 
-        // Passo 3: Gerar o Token JWT
+        // Passo 4: Gerar o Token JWT
         String token = tokenService.generateToken(user);
 
-        // Passo 4: Retornar a resposta
+        // Passo 5: Retornar a resposta
         return new LoginResponse(token, tokenService.getExpiration());
     }
 
