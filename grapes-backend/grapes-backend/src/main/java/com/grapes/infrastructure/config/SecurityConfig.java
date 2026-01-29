@@ -62,6 +62,18 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
+                                // Habilita CORS com configuração padrão
+                                .cors(cors -> cors.configurationSource(request -> {
+                                        var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                                        corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:3000",
+                                                        "http://localhost:3001"));
+                                        corsConfig.setAllowedMethods(
+                                                        java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                                        corsConfig.setAllowedHeaders(java.util.List.of("*"));
+                                        corsConfig.setAllowCredentials(true);
+                                        return corsConfig;
+                                }))
+
                                 // Desabilita CSRF (necessário para APIs REST stateless)
                                 .csrf(csrf -> csrf.disable())
 

@@ -98,4 +98,18 @@ public class PlayerService {
         return playerRepository.findByUserEmail(email)
                 .orElseThrow(() -> new RuntimeException("Player not found for email: " + email));
     }
+
+    /**
+     * Busca players cujo nickname contém o termo (para autocomplete).
+     *
+     * @param term termo de busca
+     * @return Lista de players encontrados
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<Player> searchByNickname(String term) {
+        if (term == null || term.isBlank()) {
+            return java.util.List.of();
+        }
+        return playerRepository.findByNicknameContainingIgnoreCase(term);
+    }
 }
