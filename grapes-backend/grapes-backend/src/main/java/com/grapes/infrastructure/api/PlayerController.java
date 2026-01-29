@@ -98,21 +98,4 @@ public class PlayerController {
                     .body("Internal Server Error: " + e.getMessage());
         }
     }
-
-    /**
-     * Busca jogadores por nickname (para autocomplete)
-     * GET /players/search?q=termo
-     */
-    @GetMapping("/search")
-    public ResponseEntity<?> searchPlayers(@org.springframework.web.bind.annotation.RequestParam("q") String term) {
-        try {
-            var players = playerService.searchByNickname(term).stream()
-                    .map(PlayerPublicResponse::from)
-                    .toList();
-            return ResponseEntity.ok(players);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error searching players: " + e.getMessage());
-        }
-    }
 }

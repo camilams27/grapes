@@ -18,11 +18,6 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     Optional<Player> findByNickname(String nickname);
 
     /**
-     * Busca Players cujo nickname contém o termo (para autocomplete)
-     */
-    java.util.List<Player> findByNicknameContainingIgnoreCase(String term);
-
-    /**
      * Busca Player pelo email do User associado.
      * Spring Data JPA resolve automaticamente: player.user.email
      */
