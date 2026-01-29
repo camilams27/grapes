@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.grapes.infrastructure.security.SecurityFilter;
 
@@ -32,9 +33,11 @@ import com.grapes.infrastructure.security.SecurityFilter;
 public class SecurityConfig {
 
         private final SecurityFilter securityFilter;
+        private final CorsConfigurationSource corsConfigurationSource;
 
-        public SecurityConfig(SecurityFilter securityFilter) {
+        public SecurityConfig(SecurityFilter securityFilter, CorsConfigurationSource corsConfigurationSource) {
                 this.securityFilter = securityFilter;
+                this.corsConfigurationSource = corsConfigurationSource;
         }
 
         /**
@@ -62,6 +65,9 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
+                                // Habilita CORS com nossa configuração
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
                                 // Desabilita CSRF (necessário para APIs REST stateless)
                                 .csrf(csrf -> csrf.disable())
 
