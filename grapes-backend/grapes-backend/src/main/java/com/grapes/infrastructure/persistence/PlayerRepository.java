@@ -1,10 +1,12 @@
 package com.grapes.infrastructure.persistence;
 
-import com.grapes.domain.model.Player;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
+import com.grapes.domain.model.Player;
 
 /**
  * Repositório JPA para persistência de Players.
@@ -12,6 +14,17 @@ import java.util.UUID;
  */
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
-    // Métodos de query customizados podem ser adicionados aqui
-    // Ex: Optional<Player> findByNickname(String nickname);
+
+    Optional<Player> findByNickname(String nickname);
+
+    /**
+     * Busca Players cujo nickname contém o termo (para autocomplete)
+     */
+    java.util.List<Player> findByNicknameContainingIgnoreCase(String term);
+
+    /**
+     * Busca Player pelo email do User associado.
+     * Spring Data JPA resolve automaticamente: player.user.email
+     */
+    Optional<Player> findByUserEmail(String email);
 }
